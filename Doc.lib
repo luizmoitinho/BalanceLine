@@ -1,0 +1,15 @@
+
+Sistema de Banco
+
+    - Transação bancária
+      @Saque    -    verificar se a conta destino do saque possui o valo para ser sacado.
+      @Transferência - Verificar se conta de destino existe e se a conta do remetente contém o valor para transferir
+      @Depósitos - verificar se a conta existe, para que assim possa ser incrementado o valor atual ao valor depositado
+    -Atualizar Arquivos :
+      @aquivo_mestre
+      @ARQUIVO_TRANSACAO
+      @arquivo_log
+    -Objetivo
+      @ armazenar os dados ao finalizar o programa em C
+      @ atualizar os registros de log ao finalizar o programa em C
+        - operações:
