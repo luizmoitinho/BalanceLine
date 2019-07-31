@@ -7,9 +7,22 @@ Sistema de Banco
       @Depósitos - verificar se a conta existe, para que assim possa ser incrementado o valor atual ao valor depositado
     -Atualizar Arquivos :
       @aquivo_mestre
+        -status : solicitado, aceitado/recusado
       @ARQUIVO_TRANSACAO
+      -Após atualizar os dois arquivos limpar o arquivo transacao. Contudo salvar no arquivo_log
       @arquivo_log
     -Objetivo
       @ armazenar os dados ao finalizar o programa em C
       @ atualizar os registros de log ao finalizar o programa em C
         - operações:
+    -Desenvolvimento:
+        1 - Cada registro terá um id único, ou seja:
+            >clientes :CPF
+            >logs     :numero de logs, incrementados um a um.
+            >mestre   :numero de transacoes aceitas, incrementada de um a partir do valor do codigo anterior.
+            >transacao:numero de transações momentãneas,incrementada de um a partir do valor do codigo anterior,
+                que serão zeradas ao findar do programa.
+        2- checagem das transações:
+            Ao finalizar o programa, selecionando a opção 'sair', o programa deverá realizar um processamento e identificar se a
+            transação foi realizada com sucesso ou recusada, salvando-as no arquivo de log e limpando o arquivo transacao.
+            As transações que forem realizadas com sucessos deverão atualizar o arquivo mestre.

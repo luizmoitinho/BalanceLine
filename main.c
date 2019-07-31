@@ -50,24 +50,31 @@ setlocale(LC_ALL,"portuguese");
     ARQUIVO_LOG dados_log[1000],auxLog;
 
     loadMaster(name_arq_master,dados_master);
-    loadMaster(name_arq_master,dados_transation);
-    while((opt=menu(listaClientes,session)) && opt!=9){
-
+    loadTransacao(name_arq_transacao,dados_transation);
+    while((opt=menu(listaClientes,session)) && opt!=6){
         switch(opt){
-            case 1:
-                setSaque(auxTransation,'S');
-                pushTransacao(dados_transation,auxTransation,listaClientes[session]);
+            case 1://Transferências
+                setSaque(&auxTransation,'S',listaClientes[session]);
+                pushTransacao(dados_transation,auxTransation);
+                writeTransacao(name_arq_transacao,dados_transation);
                 break;
-            case 2:
-                flag ='D';
-                setDeposito();
-                pushTransacao(dados_transation,auxTransation,listaClientes[session]);
+            case 2://Depósitos
+                setDeposito(&auxTransation,'D',listaClientes[session]);
+                pushTransacao(dados_transation,auxTransation);
+                write(name_arq_transacao,dados_transation);
                 break;
-            case 3:
-                flag ='T';
-                setTransferencia();
-                pushTransacao(dados_transation,auxTransation,listaClientes[session]);
+            case 3://Saques
+                setTransferencia(&auxTransation,'T',listaClientes[session]);
+                pushTransacao(dados_transation,auxTransation);
+                write(name_arq_transacao,dados_transation);
                 break;
+            case 4:
+                detalheConta(listaClientes[session]);
+                break;
+            default:
+                msgFalha();
         }
     }
+    printf("\n\t\t\t\tPrograma Finalizado -  MTI BANK\n");
+    //atualização dos arquivos.
 }
