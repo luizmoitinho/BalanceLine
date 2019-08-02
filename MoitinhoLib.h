@@ -149,6 +149,29 @@ void loadTransacao(char name[],  ARQUIVO_TRANSACAO lista[])
     fclose(arquivo);
 
 }
+
+void loadLog(char name[],  ARQUIVO_TRANSACAO lista[])
+{
+    FILE * arquivo = fopen(name,"rb");
+    if(arquivo!=NULL)
+    {
+        int counter=0;
+        ARQUIVO_TRANSACAO aux;
+        while(fread(&aux,sizeof(ARQUIVO_TRANSACAO),1,arquivo))
+        {
+            *(lista+counter) = aux;
+            counter++;
+        }
+        lengthLog=counter;
+    }
+    else
+    {
+        FILE *arquivo2 = fopen(name,"wb");
+        fclose(arquivo2);
+    }
+    fclose(arquivo);
+
+}
 void writeClientes(char nome[],BASE_CLIENTES clientes[])
 {
     FILE *arquivo = fopen(nome,"wb");
@@ -198,7 +221,7 @@ void bubbleSort(BASE_CLIENTES lista[]){
     BASE_CLIENTES aux;
     for(int i=0;i<lengthClientes-1;i++){
         for(int j=0;j<lengthClientes-1;j++){
-            if(lista[j].numConta>lista[j+1].cpf){
+            if(lista[j].numConta>lista[j+1].numConta){
                 aux=lista[j];
                 lista[j]=lista[j+1];
                 lista[j+1]=aux;
@@ -252,20 +275,28 @@ void setTransferencia(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES c
     msgSucesso();
 }
 
-void wormTransacoes(char name_arq_transacao[],char name_arq_master[],char name_arq_log [],BASE_CLIENTES clientes[],ARQUIVO_TRANSACAO transacoes[]){
+void wormTransacoes(char name_arq_transacao[],char name_arq_master[],char name_arq_log [],BASE_CLIENTES clientes[],ARQUIVO_TRANSACAO transacoes[],ARQUIVO_TRANSACAO logs[]){
     int pos_destino,pos_remetente;
     for(int i=0; i<lengthTransacao ;i++){
         pos_destino=-1;
         switch(transacoes[i].flag){
             case 'S':
                  pos_destino =  searchCliente(clientes,transacoes[i].numContaD);
-                 if(clientes[pos_destino].saldo - transacoes[i].valor >=0)
+                 if(clientes[pos_destino].saldo - transacoes[i].valor >=0){
                     clientes[pos_destino].saldo = clientes[pos_destino].saldo - transacoes[i].valor;
+                    //modifyLog(name_arq_log,logs,transacoes[i].codigo,'SUCESSO');
+                 }
+               // else
+                   // modifyLog(name_arq_log,logs,transacoes[i].codigo,'SALDO INSUFICIENTE');
                 break;
             case 'D':
                 pos_destino =  searchCliente(clientes,transacoes[i].numContaD);
-                if(pos_destino!=-1)
+                if(pos_destino!=-1){
                     clientes[pos_destino].saldo = transacoes[i].valor + clientes[pos_destino].saldo;
+                   // modifyLog(name_arq_log,logs,transacoes[i].codigo,'SUCESSO');
+                }
+                //else
+                   // modifyLog(name_arq_log,logs,transacoes[i].codigo,'CONTA NAO ENCONTRADA');
                 break;
             case 'T':
                 //busca a posicao da pessoa que será transferido o dinheiro
@@ -275,11 +306,13 @@ void wormTransacoes(char name_arq_transacao[],char name_arq_master[],char name_a
                     if(clientes[pos_remetente].saldo  - transacoes[i].valor >=0){
                         clientes[pos_remetente].saldo = clientes[pos_remetente].saldo - transacoes[i].valor;
                         clientes[pos_destino].saldo   = clientes[pos_destino].saldo   + transacoes[i].valor;
+                        //modifyLog(name_arq_log,transacoes[i].codigo,'SUCESSO');
                     }
+                    //else
+                       // modifyLog(name_arq_log,logs,transacoes[i].codigo,'SALDO INSUFICIENTE');
                 }
-                else{
-                    ARQUIVO_TRANSACAO log =
-                }
+              //  else
+                   // modifyLog(name_arq_log,logs,transacoes[i].codigo,'CONTA DESTINO INCORRETA');
                 break;
         }
     }
@@ -287,6 +320,17 @@ void wormTransacoes(char name_arq_transacao[],char name_arq_master[],char name_a
     FILE *limpa_arquivo = fopen(name_arq_transacao,"wb");
     fclose(limpa_arquivo);
 }
+void modifyLog(char nome[],ARQUIVO_TRANSACAO logs[],int codigo,char erroLog[]){
+    loadLog(nome,logs);
+
+    for(int i=0; i<lengthLog;i++){
+        if(codigo == logs[i].codigo){
+            strcpy(logs[i].status,erroLog);
+            break;
+        }
+    }
+}
+
 void pushTransacao(ARQUIVO_TRANSACAO transacoes[], ARQUIVO_TRANSACAO aux){
    transacoes[lengthTransacao++] = aux;
 }

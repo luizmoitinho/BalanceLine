@@ -47,25 +47,20 @@ setlocale(LC_ALL,"portuguese");
     }
 
     ARQUIVO_TRANSACAO dados_transation[1000],auxTransation;
-    ARQUIVO_LOG dados_log[1000],auxLog;
+    ARQUIVO_TRANSACAO dados_log[1000],auxLog;
     loadTransacao(name_arq_transacao,dados_transation);
     while((opt=menu(listaClientes,session)) && opt!=6){
         switch(opt){
             case 1://Transferências
                 setSaque(&auxTransation,'S',listaClientes[session]);
                 pushTransacao(dados_transation,auxTransation);
-                writeTransacao(name_arq_transacao,dados_transation); // transacao
-                writeTransacao(name_arq_log,dados_transation);  // log
                 break;
             case 2://Depósitos
                 setDeposito(&auxTransation,'D',listaClientes[session]);
                 pushTransacao(dados_transation,auxTransation);
-                writeTransacao(name_arq_transacao,dados_transation);
                 break;
             case 3://Saques
                 setTransferencia(&auxTransation,'T',listaClientes[session]);
-                pushTransacao(dados_transation,auxTransation);
-                writeTransacao(name_arq_transacao,dados_transation);
                 break;
             case 4:
                 detalheConta(listaClientes[session]);
@@ -76,7 +71,10 @@ setlocale(LC_ALL,"portuguese");
         system("pause");
         system("cls");
     }
-    wormTransacoes(name_arq_transacao,name_arq_master,name_arq_log,listaClientes,dados_transation);
+    writeTransacao(name_arq_transacao,dados_transation); // transacao
+    writeTransacao(name_arq_log,dados_transation);       // log
+    wormTransacoes(name_arq_transacao,name_arq_master,name_arq_log,listaClientes,dados_transation,dados_log);
+
     printf("\n\t\t\t\tSessão Encerrada - Obrigado por usar o MTI BANK\n");
     system("pause");
     //atualização dos arquivos.
