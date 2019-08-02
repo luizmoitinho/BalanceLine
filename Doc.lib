@@ -1,6 +1,4 @@
-
 Sistema de Banco
-
     - Transação bancária
       @Saque    -    verificar se a conta destino do saque possui o valo para ser sacado.
       @Transferência - Verificar se conta de destino existe e se a conta do remetente contém o valor para transferir

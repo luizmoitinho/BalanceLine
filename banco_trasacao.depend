@@ -1,9 +1,19 @@
 # depslib dependency file v1.0
-1564490475 source:c:\users\luiz carlos moitinho\dropbox\computador lenovo\ufs\luiz moitinho\banco_trasacao\main.c
+1564761544 source:c:\users\luiz carlos moitinho\dropbox\computador lenovo\ufs\luiz moitinho\banco_trasacao\main.c
 	<stdio.h>
 	<stdlib.h>
 	<locale.h>
+	<string.h>
 	"MoitinhoLib.h"
 
-1564490538 c:\users\luiz carlos moitinho\dropbox\computador lenovo\ufs\luiz moitinho\banco_trasacao\moitinholib.h
+1564761746 c:\users\luiz carlos moitinho\dropbox\computador lenovo\ufs\luiz moitinho\banco_trasacao\moitinholib.h
+
+1564762481 source:c:\users\luiz carlos moitinho\dropbox\computador lenovo\ufs\2019.1\estrutura de dados ii\banco_trasacao\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	"MoitinhoLib.h"
+
+1564762322 c:\users\luiz carlos moitinho\dropbox\computador lenovo\ufs\2019.1\estrutura de dados ii\banco_trasacao\moitinholib.h
 

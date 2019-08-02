@@ -6,12 +6,8 @@ typedef struct{
     int digitoConta;
     int agencia;
     int senha;
-} BASE_CLIENTES;
-typedef struct{
-    int codigo;
-    BASE_CLIENTES cliente;
     float saldo;
-} ARQUIVO_MESTRE;
+} BASE_CLIENTES;
 typedef struct{
     int numContaR,numContaD;
     int digitoContaR,digitoContaD;
@@ -21,39 +17,24 @@ typedef struct{
     char flag;
     char status[20];
 } ARQUIVO_TRANSACAO;
-typedef struct{
-    char flag;
-    int numContaR,numContaD;
-    float valor;
-    char status[20];
-}ARQUIVO_LOG;
 int menu();
 int viewHome();
 void setClientes();
-
 void msgFalha();
 void msgSucesso();
 void msgLoginNegado();
-
 void toStringCliente(BASE_CLIENTES aux);
 void createAccount(BASE_CLIENTES *cliente);
 void pushCliente(BASE_CLIENTES lista[], BASE_CLIENTES cliente);
 void loadClientes(char name[],  BASE_CLIENTES lista[]);
 void writeClientes(char nome[],BASE_CLIENTES clientes[]);
-
 void loadTransacao(char name[],  ARQUIVO_TRANSACAO lista[]);
-void writeTransacao(char nome[],ARQUIVO_MESTRE clientes[]);
+void writeTransacao(char nome[],ARQUIVO_TRANSACAO clientes[]);
 void toStringTransacao(ARQUIVO_TRANSACAO transacao);
 void detalheConta(BASE_CLIENTES cliente);
-
-void loadMaster(char name[],  ARQUIVO_MESTRE lista[]);
-void writeMaster(char nome[],ARQUIVO_TRANSACAO clientes[]);
-
-int searchCliente(BASE_CLIENTES lista[], BASE_CLIENTES cliente);
+int searchCliente(BASE_CLIENTES lista[], int cliente);
 void insertSort(BASE_CLIENTES lista[]);
 void toStringCliente(BASE_CLIENTES aux);
-
-
 void setSaque(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES cliente);
 void setDeposito(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES cliente);
 void setTransferencia(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES cliente);
@@ -63,7 +44,6 @@ void pushTransacao(ARQUIVO_TRANSACAO transacoes[], ARQUIVO_TRANSACAO aux);
 
 int menu(BASE_CLIENTES cliente[],int session){
     int opt;
-
     printf("\n\t MTI BANK | %5s -  %d/%d \n",cliente[session].nome,cliente[session].numConta,cliente[session].agencia);
     printf("\n\t[ 1 ] - SAQUE ");
     printf("\n\t[ 2 ] - DEPÓSITO ");
@@ -86,8 +66,8 @@ int viewHome(){
 void setClientes(BASE_CLIENTES *aux){
     fflush(stdin);
     printf("\n\t\tMTI BANK - ENTRAR\n");
-    printf("\n\tCPF   :  ");
-    gets(aux->cpf);
+    printf("\n\tNº Conta   :  ");
+    scanf("%d",&aux->numConta);
     printf("\tSenha   :  ");
     scanf("%d",&aux->senha);
 }
@@ -108,19 +88,20 @@ void createAccount(BASE_CLIENTES *cliente){
     scanf("%d",&cliente->agencia);
     printf("\n\tSenha:");
     scanf("%d",&cliente->senha);
+    cliente->senha=0;
 }
 
 void pushCliente(BASE_CLIENTES lista[], BASE_CLIENTES cliente){
     lista[lengthClientes++]=cliente;
 }
-int searchCliente(BASE_CLIENTES lista[], BASE_CLIENTES cliente){
+int searchCliente(BASE_CLIENTES lista[], int cliente){
     int inicio=0, fim = lengthClientes;
     int meio;
     while(inicio<=fim){
         meio = (inicio+fim)/2;
-        if( strcmp(lista[meio].cpf,cliente.cpf)==0)
+        if(lista[meio].numConta == cliente)
             return meio;
-        else if ( strcmp(lista[meio].cpf,cliente.cpf)<0)
+        else if(lista[meio].numConta < cliente)
             inicio = meio+1;
         else
             fim = meio-1;
@@ -130,49 +111,20 @@ int searchCliente(BASE_CLIENTES lista[], BASE_CLIENTES cliente){
 
 void detalheConta(BASE_CLIENTES cliente){
     printf("\n\t\tDETALHES DA CONTA\n");
-    printf("Número     : %d",cliente.numConta);
-    printf("Dígito     : %d",cliente.digitoConta);
-    printf("Agência    : %d",cliente.agencia);
-    printf("Titular    : %s",cliente.nome);
-    printf("CPF        : %s",cliente.cpf);
-    printf("Saldo    (fazer o metodo):  %.2f\n");
+    printf("\n\tNúmero     : %d",cliente.numConta);
+    printf("\n\tDígito     : %d",cliente.digitoConta);
+    printf("\n\tAgência    : %d",cliente.agencia);
+    printf("\n\tTitular    : %s",cliente.nome);
+    printf("\n\tCPF        : %s",cliente.cpf);
+    printf("\n\tSaldo      : %.2f\n",cliente.saldo);
+    printf("\n\n");
     //Criar o método que percorre os dados que estão no arquivo mestre e achar o saldo atual do cliente.
 }
 //================ MANIPULAÇÃO DE ARQUIVOS BINARIOS =================
-void writeMaster(char nome[],ARQUIVO_TRANSACAO clientes[])
-{
+void writeTransacao(char nome[],ARQUIVO_TRANSACAO clientes[]){
     FILE *arquivo = fopen(nome,"wb");
     if(arquivo!=NULL)
-        fwrite(clientes,sizeof(ARQUIVO_TRANSACAO),lengthMaster,arquivo);
-    fclose(arquivo);
-}
-void loadMaster(char name[], ARQUIVO_MESTRE lista[])
-{
-    FILE * arquivo = fopen(name,"rb");
-    if(arquivo!=NULL)
-    {
-        int counter=0;
-        ARQUIVO_MESTRE aux;
-        while(fread(&aux,sizeof(ARQUIVO_MESTRE),1,arquivo))
-        {
-            *(lista+counter) = aux;
-            counter++;
-        }
-        lengthMaster=counter;
-    }
-    else
-    {
-        FILE *arquivo2 = fopen(name,"wb");
-        fclose(arquivo2);
-    }
-    fclose(arquivo);
-
-}
-void writeTransacao(char nome[],ARQUIVO_MESTRE clientes[])
-{
-    FILE *arquivo = fopen(nome,"wb");
-    if(arquivo!=NULL)
-        fwrite(clientes,sizeof(ARQUIVO_MESTRE),lengthTransacao,arquivo);
+        fwrite(clientes,sizeof(ARQUIVO_TRANSACAO),lengthTransacao,arquivo);
     fclose(arquivo);
 }
 void loadTransacao(char name[],  ARQUIVO_TRANSACAO lista[])
@@ -184,8 +136,6 @@ void loadTransacao(char name[],  ARQUIVO_TRANSACAO lista[])
         ARQUIVO_TRANSACAO aux;
         while(fread(&aux,sizeof(ARQUIVO_TRANSACAO),1,arquivo))
         {
-            toStringTransacao(aux);
-            getch();
             *(lista+counter) = aux;
             counter++;
         }
@@ -199,8 +149,6 @@ void loadTransacao(char name[],  ARQUIVO_TRANSACAO lista[])
     fclose(arquivo);
 
 }
-
-
 void writeClientes(char nome[],BASE_CLIENTES clientes[])
 {
     FILE *arquivo = fopen(nome,"wb");
@@ -229,6 +177,7 @@ void loadClientes(char name[],  BASE_CLIENTES lista[])
     }
     fclose(arquivo);
 }
+
 //=========================== MÉTODO DE ORDENAÇÃO ================
 void insertSort(BASE_CLIENTES lista[]){
     int i,j;
@@ -249,7 +198,7 @@ void bubbleSort(BASE_CLIENTES lista[]){
     BASE_CLIENTES aux;
     for(int i=0;i<lengthClientes-1;i++){
         for(int j=0;j<lengthClientes-1;j++){
-            if(strcmp(lista[j].cpf,lista[j+1].cpf)>0){
+            if(lista[j].numConta>lista[j+1].cpf){
                 aux=lista[j];
                 lista[j]=lista[j+1];
                 lista[j+1]=aux;
@@ -257,24 +206,23 @@ void bubbleSort(BASE_CLIENTES lista[]){
         }
     }
 }
-
 void  toStringCliente(BASE_CLIENTES aux){
     printf("%s,%s - %d-%d-%d (%d)",aux.nome,aux.cpf,aux.numConta,aux.digitoConta,aux.agencia,aux.senha);
 }
 void toStringTransacao(ARQUIVO_TRANSACAO transacao){
-    printf("Nº ContaR: %d | Nº ContaD: %d |\n Nº digitoContaR: %d | Nº DigitoContaD: %d  ",transacao.numContaD,transacao.numContaR,transacao.digitoContaR,transacao.digitoContaR);
-    printf("Agência: %d | Código: %d | valor: %d | flag:%c | status: %s\n\n",transacao.agencia,transacao.codigo,transacao.valor,transacao.flag,transacao.status);
+    printf("Nº ContaD: %d | Nº DigitoContaD: %d | Nº ContaR: %d | Nº DigitoContaR: %d \n",transacao.numContaD,transacao.digitoContaD,transacao.numContaR,transacao.digitoContaR);
+    printf("Agência: %d | Código: %d | valor: %.2f | flag:%c | status: %s\n\n",transacao.agencia,transacao.codigo,transacao.valor,transacao.flag,transacao.status);
 }
-
 //============================  SET DADOS =====================
 void setSaque(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES cliente){
     printf("\n\t\tDADOS SAQUE\n\n");
     printf("\n Valor       : ");
-    newTransacao->codigo =  lengthTransacao;
     scanf("%f",&newTransacao->valor);
+    newTransacao->codigo =  lengthTransacao;
     newTransacao->flag = tipo;
     newTransacao->numContaD =  cliente.numConta;
     newTransacao->digitoContaD= cliente.digitoConta;
+    strcpy(newTransacao->status,"ANALISE");
     msgSucesso();
 }
 void setDeposito(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES cliente){
@@ -285,6 +233,7 @@ void setDeposito(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES client
     newTransacao->flag = tipo;
     newTransacao->numContaD=cliente.numConta;
     newTransacao->digitoContaD=cliente.digitoConta;
+    strcpy(newTransacao->status,"ANALISE");
     msgSucesso();
 }
 void setTransferencia(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES cliente){
@@ -299,20 +248,55 @@ void setTransferencia(ARQUIVO_TRANSACAO *newTransacao, char tipo,BASE_CLIENTES c
     newTransacao->flag = tipo;
     newTransacao->numContaR = cliente.numConta;
     newTransacao->digitoContaR = cliente.numConta;
+    strcpy(newTransacao->status,"ANALISE");
     msgSucesso();
+}
+
+void wormTransacoes(char name_arq_transacao[],char name_arq_master[],char name_arq_log [],BASE_CLIENTES clientes[],ARQUIVO_TRANSACAO transacoes[]){
+    int pos_destino,pos_remetente;
+    for(int i=0; i<lengthTransacao ;i++){
+        pos_destino=-1;
+        switch(transacoes[i].flag){
+            case 'S':
+                 pos_destino =  searchCliente(clientes,transacoes[i].numContaD);
+                 if(clientes[pos_destino].saldo - transacoes[i].valor >=0)
+                    clientes[pos_destino].saldo = clientes[pos_destino].saldo - transacoes[i].valor;
+                break;
+            case 'D':
+                pos_destino =  searchCliente(clientes,transacoes[i].numContaD);
+                if(pos_destino!=-1)
+                    clientes[pos_destino].saldo = transacoes[i].valor + clientes[pos_destino].saldo;
+                break;
+            case 'T':
+                //busca a posicao da pessoa que será transferido o dinheiro
+                pos_destino =  searchCliente(clientes,transacoes[i].numContaD);
+                if(pos_destino!=-1){
+                    pos_remetente = searchCliente(clientes,transacoes[i].numContaR);
+                    if(clientes[pos_remetente].saldo  - transacoes[i].valor >=0){
+                        clientes[pos_remetente].saldo = clientes[pos_remetente].saldo - transacoes[i].valor;
+                        clientes[pos_destino].saldo   = clientes[pos_destino].saldo   + transacoes[i].valor;
+                    }
+                }
+                else{
+                    ARQUIVO_TRANSACAO log =
+                }
+                break;
+        }
+    }
+    writeClientes(name_arq_master,clientes);
+    FILE *limpa_arquivo = fopen(name_arq_transacao,"wb");
+    fclose(limpa_arquivo);
 }
 void pushTransacao(ARQUIVO_TRANSACAO transacoes[], ARQUIVO_TRANSACAO aux){
    transacoes[lengthTransacao++] = aux;
 }
 
-
-
 void msgSucesso(){
-    printf("\n\t\tOperação realizada com sucesso!");
+    printf("\n\t\tOperação realizada com sucesso!\n\n");
 }
 void msgFalha(){
-    printf("\n\t\tErro ao efetuar a operação!");
+    printf("\n\t\tErro ao efetuar a operação!\n\n");
 }
 void msgLoginNegado(){
-    printf("\n\t\tCliente não cadastrado no sistema!");
+    printf("\n\t\tCliente não cadastrado no sistema!\n\n");
 }
